@@ -1,0 +1,77 @@
+// Shared wire contract. No code evaluation; validation runs only during management/build.
+export const LIMITS = Object.freeze({ plugins: 8, moduleBytes: 131072, totalBytes: 524288, zipBytes: 262144, fields: 32 });
+export const PERMISSIONS = ['reply.text', 'reply.image', 'storage', 'http', 'model.context'];
+const encoder = new TextEncoder();
+const own = (o, k) => Object.prototype.hasOwnProperty.call(o, k);
+const fail = (m) => { throw new Error(m); };
+const object = (o) => o && typeof o === 'object' && !Array.isArray(o);
+const safeKey = (s) => typeof s === 'string' && /^[a-zA-Z][a-zA-Z0-9_-]{0,63}$/.test(s) && !['constructor', 'prototype', '__proto__'].includes(s);
+export function validateManifest(m) {
+  if (!object(m) || m.apiVersion !== 1 || !/^[a-z][a-z0-9-]{1,47}$/.test(m.id ?? '') || !/^\d+\.\d+\.\d+(?:-[A-Za-z0-9.-]+)?$/.test(m.version ?? '') || typeof m.name !== 'string' || !m.name || m.name.length > 80 || m.entry !== 'plugin.mjs') fail('插件清单、SDK 版本或入口无效。');
+  if (JSON.stringify(m).length > 16000) fail('插件清单过大。');
+  if (!Array.isArray(m.permissions) || m.permissions.some(p => !PERMISSIONS.includes(p)) || new Set(m.permissions).size !== m.permissions.length) fail('插件权限无效。');
+  if (!Array.isArray(m.commands) || m.commands.length > 32) fail('插件命令列表无效。');
+  const ids = new Set(), triggers = new Set();
+  for (const c of m.commands) {
+    if (!object(c) || !safeKey(c.id) || ids.has(c.id) || !['exact', 'prefix'].includes(c.mode ?? 'exact') || typeof c.description !== 'string' || c.description.length > 240 || !Array.isArray(c.triggers) || !c.triggers.length || c.triggers.length > 16) fail('插件命令定义无效。');
+    ids.add(c.id);
+    for (const t of c.triggers) {
+      if (typeof t !== 'string' || !t || t.length > 80 || t.trim() !== t || /[\s\x00-\x1f]/.test(t) || triggers.has(t) || ['/clear', '/proactive'].includes(t)) fail('插件命令重复、包含空格或占用核心命令。');
+      triggers.add(t);
+    }
+  }
+  return m;
+}
+export function validateSchema(s) {
+  if (!object(s) || s.type !== 'object' || !object(s.properties) || Object.keys(s.properties).length > LIMITS.fields || JSON.stringify(s).length > 24000) fail('配置 schema 必须是最多 32 项字段的 object。');
+  if (s.required !== undefined && (!Array.isArray(s.required) || s.required.some(k => !own(s.properties,k)))) fail('required 字段无效。');
+  for (const [k, f] of Object.entries(s.properties)) {
+    if (!safeKey(k) || !object(f) || !['string','boolean','number','integer'].includes(f.type)) fail('首版配置支持文本、布尔、数值、整数。');
+    if (f['x-secret'] && f.type !== 'string') fail('密钥字段必须是字符串。');
+    if (f.enum && (!Array.isArray(f.enum) || !f.enum.length || f.enum.length > 32)) fail('枚举配置无效。');
+    for (const b of ['minimum','maximum','minLength','maxLength']) if (f[b] !== undefined && (!Number.isFinite(f[b]) || Math.abs(f[b]) > 1000000000)) fail('配置范围无效。');
+    if (f.default !== undefined) checkValue(k, f, f.default);
+    if (f['x-secret'] && f.default) fail('禁止在包内嵌入默认密钥。');
+  }
+  return s;
+}
+function checkValue(k, f, v) {
+  if (f.type === 'integer' ? !Number.isSafeInteger(v) : typeof v !== f.type || typeof v === 'number' && !Number.isFinite(v)) fail(`${k} 类型不正确。`);
+  if (typeof v === 'string' && (v.length > (f.maxLength ?? 4000) || v.length < (f.minLength ?? 0))) fail(`${k} 文本长度不正确。`);
+  if (typeof v === 'number' && (v < (f.minimum ?? -Infinity) || v > (f.maximum ?? Infinity))) fail(`${k} 超出范围。`);
+  if (f.enum && !f.enum.includes(v)) fail(`${k} 不在可选值中。`);
+}
+export function validateConfig(schema, input = {}, { enabled = true, secretPresence = {} } = {}) {
+  validateSchema(schema);
+  if (!object(input)) fail('配置必须为对象。');
+  const result = {};
+  for (const k of Object.keys(input)) if (!own(schema.properties,k)) fail(`未知配置项：${k}`);
+  for (const [k,f] of Object.entries(schema.properties)) {
+    const value = own(input,k) ? input[k] : f.default;
+    if (value !== undefined) { checkValue(k,f,value); result[k] = value; }
+    if (enabled && schema.required?.includes(k) && (value === undefined || value === '') && !secretPresence[k]) fail(`请填写必填项：${f.title || k}`);
+  }
+  return result;
+}
+export async function digest(text) { return [...new Uint8Array(await crypto.subtle.digest('SHA-256', encoder.encode(text)))].map(x=>x.toString(16).padStart(2,'0')).join(''); }
+export async function validatePackage(p) {
+  if (!object(p) || p.format !== 1 || typeof p.code !== 'string' || encoder.encode(p.code).length > LIMITS.moduleBytes) fail('插件包格式或大小无效。');
+  validateManifest(p.manifest); validateSchema(p.schema);
+  if (p.sha256 !== await digest(p.code)) fail('插件代码校验失败。');
+  return p;
+}
+export async function validateInstallation(items) {
+  if (!Array.isArray(items) || items.length > LIMITS.plugins) fail('最多安装 8 个插件。');
+  let bytes = 0; const ids = new Set(), commands = new Set();
+  for (const item of items) {
+    await validatePackage(item.package);
+    const m = item.package.manifest;
+    if (ids.has(m.id)) fail('插件 ID 重复。'); ids.add(m.id);
+    bytes += encoder.encode(item.package.code).length;
+    if (typeof item.enabled !== 'boolean' || !Array.isArray(item.scopes) || item.scopes.some(s=>!['group','c2c'].includes(s)) || item.scopes.length > 2) fail('插件开关或使用范围无效。');
+    validateConfig(item.package.schema, item.config, { enabled:item.enabled, secretPresence:item.secretPresence });
+    if (item.enabled) for (const c of m.commands) for (const t of c.triggers) { if (commands.has(t)) fail(`命令冲突：${t}`); commands.add(t); }
+  }
+  if (bytes > LIMITS.totalBytes) fail('插件代码总量超过 512 KiB。');
+  return items;
+}

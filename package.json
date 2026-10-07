@@ -1,0 +1,10 @@
+{
+  "name": "@qq-bot/plugin-sdk", "version": "1.0.0", "type": "module", "license": "MIT",
+  "description": "Typed plugin contract and offline build tools for QQ Bot on Cloudflare Pages",
+  "exports": { ".": { "types": "./src/index.d.ts", "default": "./src/index.js" }, "./protocol": "./src/protocol.js", "./testing": "./src/testing.js" },
+  "bin": { "qq-plugin": "./bin/qq-plugin.mjs" },
+  "files": ["src", "bin", "README.md", "AI-PLUGIN-PROMPT.md", "LICENSE"],
+  "scripts": { "test": "node --test tests/*.test.mjs" },
+  "dependencies": { "esbuild": "0.25.12", "fflate": "0.8.3", "es-module-lexer": "1.7.0" },
+  "engines": { "node": ">=22" }
+}

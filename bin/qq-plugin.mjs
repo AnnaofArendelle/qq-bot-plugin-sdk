@@ -1,0 +1,20 @@
+#!/usr/bin/env node
+import { build } from 'esbuild';
+import { zipSync, strToU8 } from 'fflate';
+import { parse } from 'es-module-lexer/js';
+import { readFile, writeFile, mkdir } from 'node:fs/promises';
+import { validatePackage, digest } from '../src/protocol.js';
+if (process.argv[2] !== 'build') throw new Error('Usage: qq-plugin build');
+const manifest = JSON.parse(await readFile('plugin.json','utf8'));
+const schema = JSON.parse(await readFile('config.schema.json','utf8'));
+const result = await build({ entryPoints: ['src/index.ts'], bundle:true, write:false, format:'esm', platform:'browser', target:'es2022', minify:true, legalComments:'none', metafile:true });
+const code = result.outputFiles[0].text;
+const [imports, exports] = parse(code);
+if (imports.length || !exports.some(e=>e.n === 'default')) throw new Error('Plugin must export default; external/dynamic imports and import.meta are unsupported. Bundle dependencies.');
+const pkg = { format:1, manifest, schema, code, sha256:await digest(code) };
+await validatePackage(pkg);
+await mkdir('dist',{recursive:true});
+await writeFile('dist/plugin.mjs',code);
+await writeFile('dist/plugin-package.json',JSON.stringify(pkg));
+await writeFile(`dist/${manifest.id}-${manifest.version}.zip`,zipSync({ 'plugin.json':strToU8(JSON.stringify({...manifest,sha256:pkg.sha256})), 'config.schema.json':strToU8(JSON.stringify(schema)), 'plugin.mjs':strToU8(code) }));
+console.log(`Built ${manifest.id}@${manifest.version}: ${Buffer.byteLength(code)} bytes`);

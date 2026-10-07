@@ -1,0 +1,13 @@
+请为 QQ Bot Plugin SDK v1 开发一个可在 Cloudflare Pages / Workers 运行的插件。
+先阅读 SDK README.md、src/index.d.ts、src/protocol.js，以及官方 daily/essentials 示例，不要猜测接口。
+
+需求：[填写你的功能、命令和配置项]
+
+交付 plugin.json、config.schema.json、src/index.ts、测试、package.json、tsconfig.json 和中文 README。
+使用 definePlugin 默认导出；在清单中完整声明 exact/prefix 命令及所用能力。
+只通过 ctx.message / config / reply / storage / http / commands 与机器人交互，不导入私有核心，不访问 ENV、原始 QQ Token、原始数据库，不使用 Node 内置模块、eval、动态 import、后台循环或全局可变持久状态。
+异步操作必须 await；命令错误不应重试发送多条重复消息；HTTP 只用 HTTPS，保持小体积、低 CPU。
+配置 schema 只支持一层 string/boolean/number/integer 字段，密钥使用 x-secret 且无非空默认值。
+如使用 AI beforeModel，仅返回 systemAppend，不直接发送回复、不添加模型工具。
+编写验证业务行为和失败边界的测试，使用 SDK testing 模拟 HTTP 和存储；不要调用真实 QQ/AI。
+执行类型检查、测试及 qq-plugin build，交付生成的 ZIP。明确插件 ID、版本、命令、配置、能力、数据保留和 CPU 边界。
