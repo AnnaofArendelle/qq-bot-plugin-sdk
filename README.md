@@ -7,7 +7,7 @@
 ## 开发与安装
 
 ```sh
-npm install -D https://github.com/AnnaofArendelle/qq-bot-plugin-sdk/releases/download/v1.0.1/qq-bot-plugin-sdk-1.0.1.tgz
+npm install -D https://github.com/AnnaofArendelle/qq-bot-plugin-sdk/releases/download/v1.0.2/qq-bot-plugin-sdk-1.0.2.tgz
 ```
 
 推荐克隆 [每日插件](https://github.com/AnnaofArendelle/qq-bot-plugin-daily) 或 [系统插件](https://github.com/AnnaofArendelle/qq-bot-plugin-essentials) 作为模板，然后运行 `npm ci`、`npm run typecheck`、`npm test`。将 `dist/<id>-<version>.zip` 交给用户，通过 WebUI「插件管理」上传，启用并点击「保存并部署」。不要上传 GitHub 自动生成的源代码 ZIP。
@@ -93,3 +93,7 @@ Cloudflare 免费 Workers 请求 CPU 上限为 10ms（包括 waitUntil 的计算
 ## 1.0.1：MoeBot 品牌更新
 
 项目正式名称为**猫猫机器人（MoeBot）**，统一使用猫猫 SVG Logo。仓库地址、npm 包名、CLI、插件 ID、发布产物文件名和插件 API v1 保持兼容。
+
+## 1.0.2：简化 Logo
+
+使用眼睛、小嘴和胡须组成的单色猫脸符号，去掉外轮廓和底板。插件 API v1 保持不变。
