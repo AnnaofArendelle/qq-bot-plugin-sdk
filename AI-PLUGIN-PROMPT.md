@@ -1,4 +1,4 @@
-请为 QQ Bot Plugin SDK v1 开发一个可在 Cloudflare Pages / Workers 运行的插件。
+请为 猫猫机器人（MoeBot）Plugin SDK v1 开发一个可在 Cloudflare Pages / Workers 运行的插件。
 先阅读 SDK README.md、src/index.d.ts、src/protocol.js，以及官方 daily/essentials 示例，不要猜测接口。
 
 需求：[填写你的功能、命令和配置项]

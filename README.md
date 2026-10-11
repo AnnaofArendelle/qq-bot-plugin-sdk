@@ -1,11 +1,13 @@
-# QQ Bot Plugin SDK v1
+<img src="assets/moebot.svg" width="80" height="80" alt="猫猫机器人（MoeBot）Logo">
 
-用于 Cloudflare Pages / Workers 上 QQ Bot 的独立插件 SDK。SDK 提供类型、构建器、配置协议和测试工具，不包含机器人核心源代码。需要 Node.js 22+。
+# 猫猫机器人（MoeBot）Plugin SDK v1
+
+用于 Cloudflare Pages / Workers 上 猫猫机器人（MoeBot） 的独立插件 SDK。SDK 提供类型、构建器、配置协议和测试工具，不包含机器人核心源代码。需要 Node.js 22+。
 
 ## 开发与安装
 
 ```sh
-npm install -D https://github.com/AnnaofArendelle/qq-bot-plugin-sdk/releases/download/v1.0.0/qq-bot-plugin-sdk-1.0.0.tgz
+npm install -D https://github.com/AnnaofArendelle/qq-bot-plugin-sdk/releases/download/v1.0.1/qq-bot-plugin-sdk-1.0.1.tgz
 ```
 
 推荐克隆 [每日插件](https://github.com/AnnaofArendelle/qq-bot-plugin-daily) 或 [系统插件](https://github.com/AnnaofArendelle/qq-bot-plugin-essentials) 作为模板，然后运行 `npm ci`、`npm run typecheck`、`npm test`。将 `dist/<id>-<version>.zip` 交给用户，通过 WebUI「插件管理」上传，启用并点击「保存并部署」。不要上传 GitHub 自动生成的源代码 ZIP。
@@ -87,3 +89,7 @@ Cloudflare 免费 Workers 请求 CPU 上限为 10ms（包括 waitUntil 的计算
 - `AI-PLUGIN-PROMPT.md`：可直接交给 AI 的开发提示。
 
 版本策略：`apiVersion:1` 为稳定的核心交互协议，插件 `version` 使用 SemVer。核心不支持的 API 版本拒绝安装。新 SDK 若有破坏性契约修改应提升 API 版本。
+
+## 1.0.1：MoeBot 品牌更新
+
+项目正式名称为**猫猫机器人（MoeBot）**，统一使用猫猫 SVG Logo。仓库地址、npm 包名、CLI、插件 ID、发布产物文件名和插件 API v1 保持兼容。

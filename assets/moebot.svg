@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">猫猫机器人（MoeBot）</title>
+  <desc id="desc">墨绿色圆角方形中的奶白色猫猫，带有尖耳、胡须和微笑。</desc>
+  <rect width="64" height="64" rx="18" fill="#176d58"/>
+  <path d="M14 32V14q0-3 3-1l12 9h6l12-9q3-2 3 1v18c4 18-7 23-18 23S10 50 14 32Z" fill="#fff8e9"/>
+  <path d="m18 19 8 6-8 4Zm28 0-8 6 8 4Z" fill="#edb7a0"/>
+  <path d="M23 35v3m18-3v3" stroke="#176d58" stroke-width="3.5" stroke-linecap="round"/>
+  <path d="m29 40 3 3 3-3Z" fill="#176d58"/>
+  <path d="M26 45q3 3 6-2 3 5 6 2M11 36l8 2m-8 7 8-2m34-7-8 2m8 7-8-2" fill="none" stroke="#176d58" stroke-width="2" stroke-linecap="round"/>
+</svg>
