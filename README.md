@@ -7,7 +7,7 @@
 ## 开发与安装
 
 ```sh
-npm install -D https://github.com/AnnaofArendelle/qq-bot-plugin-sdk/releases/download/v1.0.3/qq-bot-plugin-sdk-1.0.3.tgz
+npm install -D https://github.com/AnnaofArendelle/qq-bot-plugin-sdk/releases/download/v1.0.4/qq-bot-plugin-sdk-1.0.4.tgz
 ```
 
 推荐克隆 [每日插件](https://github.com/AnnaofArendelle/qq-bot-plugin-daily) 或 [系统插件](https://github.com/AnnaofArendelle/qq-bot-plugin-essentials) 作为模板，然后运行 `npm ci`、`npm run typecheck`、`npm test`。将 `dist/<id>-<version>.zip` 交给用户，通过 WebUI「插件管理」上传，启用并点击「保存并部署」。不要上传 GitHub 自动生成的源代码 ZIP。
@@ -101,3 +101,7 @@ Cloudflare 免费 Workers 请求 CPU 上限为 10ms（包括 waitUntil 的计算
 ## 1.0.3：加强图标辨识度
 
 恢复绿色圆角底板，以粗白线绘制猫猫的眼睛、小嘴和胡须，适配控制台与 favicon 小尺寸显示。
+
+## 1.0.4：明确猫脸五官
+
+Logo 使用独立的椭圆眼睛、倒三角鼻子和猫嘴，保留绿色圆角底板与短胡须。
