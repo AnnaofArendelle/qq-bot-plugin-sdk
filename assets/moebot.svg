@@ -1,8 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
   <title id="title">MoeBot</title>
-  <desc id="desc">由眼睛、微笑的小嘴和两侧胡须组成的简洁猫脸符号。</desc>
-  <g fill="none" stroke="#176d58" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M22 27q3-6 6 0m8 0q3-6 6 0M25 36c0 6 7 6 7 0 0 6 7 6 7 0"/>
-    <path d="m7 27 9 3m-9 9 9-3m41-9-9 3m9 9-9-3"/>
+  <desc id="desc">绿色圆角底板上的白色猫脸，带有粗线条眼睛、小嘴和胡须。</desc>
+  <rect width="64" height="64" rx="16" fill="#176d58"/>
+  <g fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M23 26q3-7 6 0m6 0q3-7 6 0M24 38c0 8 8 8 8 0 0 8 8 8 8 0"/>
+    <path d="m9 25 8 4m-8 12 8-4m38-12-8 4m8 12-8-4"/>
   </g>
 </svg>
