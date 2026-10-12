@@ -14,9 +14,10 @@ export function validateManifest(m) {
   const ids = new Set(), triggers = new Set();
   for (const c of m.commands) {
     if (!object(c) || !safeKey(c.id) || ids.has(c.id) || !['exact', 'prefix'].includes(c.mode ?? 'exact') || typeof c.description !== 'string' || c.description.length > 240 || !Array.isArray(c.triggers) || !c.triggers.length || c.triggers.length > 16) fail('插件命令定义无效。');
+    if (c.panel !== undefined && (!object(c.panel) || Object.keys(c.panel).some(k => !['order','description'].includes(k)) || c.panel.order !== undefined && (!Number.isInteger(c.panel.order) || Math.abs(c.panel.order) > 10000) || c.panel.description !== undefined && (typeof c.panel.description !== 'string' || !c.panel.description.trim() || c.panel.description.length > 240 || /[\x00-\x1f\x7f]/.test(c.panel.description)))) fail('面板声明只支持 order（-10000 到 10000 的整数）和 description（1 到 240 字符）。');
     ids.add(c.id);
     for (const t of c.triggers) {
-      if (typeof t !== 'string' || !t || t.length > 80 || t.trim() !== t || /[\s\x00-\x1f]/.test(t) || triggers.has(t) || ['/clear', '/proactive'].includes(t)) fail('插件命令重复、包含空格或占用核心命令。');
+      if (typeof t !== 'string' || !t || t.length > 80 || t.trim() !== t || /[\s\x00-\x1f]/.test(t) || triggers.has(t) || ['/clear', '/proactive', '/mcp-cancel'].includes(t)) fail('插件命令重复、包含空格或占用核心命令。');
       triggers.add(t);
     }
   }

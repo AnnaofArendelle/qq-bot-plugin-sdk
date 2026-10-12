@@ -11,3 +11,5 @@
 如使用 AI beforeModel，仅返回 systemAppend，不直接发送回复、不添加模型工具。
 编写验证业务行为和失败边界的测试，使用 SDK testing 模拟 HTTP 和存储；不要调用真实 QQ/AI。
 执行类型检查、测试及 qq-plugin build，交付生成的 ZIP。明确插件 ID、版本、命令、配置、能力、数据保留和 CPU 边界。
+
+如需出现在 MoeBot 0.7.5 的 QQ 指令面板，请为命令声明实际可用的 `/` 入口，保持旧入口兼容。可在 `plugin.json` 的命令上添加 `panel: { order: 100, description: "简短说明" }`，不增加 `name`、凭据或网络操作。不改变 SDK ctx 契约。若处理器直接解析 `ctx.message.text`，须自行兼容新增斜杠。面板由部署流程统一生成和同步。
