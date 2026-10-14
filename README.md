@@ -7,7 +7,7 @@
 ## 开发与安装
 
 ```sh
-npm install -D https://github.com/AnnaofArendelle/qq-bot-plugin-sdk/releases/download/v1.0.4/qq-bot-plugin-sdk-1.0.4.tgz
+npm install -D https://github.com/AnnaofArendelle/qq-bot-plugin-sdk/releases/download/v1.2.0/qq-bot-plugin-sdk-1.2.0.tgz
 ```
 
 推荐克隆 [每日插件](https://github.com/AnnaofArendelle/qq-bot-plugin-daily) 或 [系统插件](https://github.com/AnnaofArendelle/qq-bot-plugin-essentials) 作为模板，然后运行 `npm ci`、`npm run typecheck`、`npm test`。将 `dist/<id>-<version>.zip` 交给用户，通过 WebUI「插件管理」上传，启用并点击「保存并部署」。不要上传 GitHub 自动生成的源代码 ZIP。
@@ -58,6 +58,7 @@ export default definePlugin<{greeting:string}>({
 - `ctx.storage.get/set/delete/putIfDay`：JSON 存储，自动以插件 ID 隔离；`putIfDay(key,{day,...})` 原子保留同一天已存在的值。每值最多 4000 字符，每次处理最多 8 次存储操作。ID 是数据身份，升级不要随意改 ID。
 - `ctx.http.json(url,{timeoutMs})`：HTTPS GET，禁止重定向，单响应最多 1 MiB，每次处理最多 4 个请求，超时 1–15 秒。SDK 网络封装是使用约定，不是防恶意代码的网络沙箱。
 - `ctx.commands`：当前渠道已启用插件及核心命令目录，供帮助面板使用。
+- `ctx.runtime`（核心 0.7.7+）：`version` 是后端版本；`await getDeployedAt()` 返回 Cloudflare 已确认的生产部署时间（ISO 8601），尚未确认时返回 `null`。旧核心没有此字段，请使用可选访问。只有显式调用该方法才读取部署记录；普通消息不增加数据库查询。测试可向 `createTestContext` 传入 `runtime` 模拟时间。
 - `beforeModel(ctx)`：需声明 `model.context` 能力，在核心主动/被动判断决定调用 AI 后运行；返回 `{systemAppend:"补充要求"}`。单插件最多 2000 字符，总共最多 4000；此钩子不能调用 SDK 回复接口。不会创建额外模型请求，不支持自行注册模型工具或改变现有 reply 工具协议。
 - `ctx.log.info/error()`：核心只记录插件 ID 与事件类别，避免无意记录配置密钥；传入的详细文本不输出。
 

@@ -7,6 +7,8 @@ export interface Message {
 export interface CommandInfo { pluginId: string; id: string; triggers: readonly string[]; description: string; }
 export interface PluginContext<C = Record<string, unknown>> {
   readonly message: Message; readonly config: Readonly<C>;
+  /** Available on core >=0.7.7. Time comes from the confirmed Cloudflare deployment, not an isolate start. */
+  readonly runtime?: { readonly version: string; getDeployedAt(): Promise<string | null> };
   readonly command: { id: string; trigger: string; args: string };
   readonly commands: readonly CommandInfo[];
   readonly storage: { get<T = unknown>(key: string): Promise<T | null>; set(key: string, value: unknown): Promise<void>; delete(key: string): Promise<void>; putIfDay<T extends {day: string}>(key: string, value: T): Promise<T> };
