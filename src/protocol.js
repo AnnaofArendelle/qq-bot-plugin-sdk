@@ -1,6 +1,6 @@
 // Shared wire contract. No code evaluation; validation runs only during management/build.
 export const LIMITS = Object.freeze({ plugins: 8, moduleBytes: 131072, totalBytes: 524288, zipBytes: 262144, fields: 32 });
-export const PERMISSIONS = ['reply.text', 'reply.image', 'storage', 'http', 'model.context'];
+export const PERMISSIONS = ['reply.text', 'reply.image', 'reply.markdown', 'storage', 'http', 'model.context'];
 const encoder = new TextEncoder();
 const own = (o, k) => Object.prototype.hasOwnProperty.call(o, k);
 const fail = (m) => { throw new Error(m); };
@@ -70,6 +70,7 @@ export async function validateInstallation(items) {
     if (ids.has(m.id)) fail('插件 ID 重复。'); ids.add(m.id);
     bytes += encoder.encode(item.package.code).length;
     if (typeof item.enabled !== 'boolean' || !Array.isArray(item.scopes) || item.scopes.some(s=>!['group','c2c'].includes(s)) || item.scopes.length > 2) fail('插件开关或使用范围无效。');
+    if (item.markdown !== undefined && (typeof item.markdown !== 'boolean' || item.markdown && !m.permissions.includes('reply.markdown'))) fail('插件 Markdown 授权无效：只有声明 reply.markdown 的插件才能获得授权。');
     validateConfig(item.package.schema, item.config, { enabled:item.enabled, secretPresence:item.secretPresence });
     if (item.enabled) for (const c of m.commands) for (const t of c.triggers) { if (commands.has(t)) fail(`命令冲突：${t}`); commands.add(t); }
   }

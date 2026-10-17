@@ -9,6 +9,7 @@
 异步操作必须 await；命令错误不应重试发送多条重复消息；HTTP 只用 HTTPS，保持小体积、低 CPU。
 配置 schema 只支持一层 string/boolean/number/integer 字段，密钥使用 x-secret 且无非空默认值。
 如使用 AI beforeModel，仅返回 systemAppend，不直接发送回复、不添加模型工具。
+如需要 Markdown 消息，在 plugin.json 声明 "reply.markdown" 能力，用 `ctx.reply.markdown` 并先做 typeof 判断（管理员默认不授权）；未授权时降级为 ctx.reply.text。Markdown 内容 1~4000 字符，图片只用公网 https 直链。
 编写验证业务行为和失败边界的测试，使用 SDK testing 模拟 HTTP 和存储；不要调用真实 QQ/AI。
 执行类型检查、测试及 qq-plugin build，交付生成的 ZIP。明确插件 ID、版本、命令、配置、能力、数据保留和 CPU 边界。
 

@@ -12,7 +12,11 @@ export interface PluginContext<C = Record<string, unknown>> {
   readonly command: { id: string; trigger: string; args: string };
   readonly commands: readonly CommandInfo[];
   readonly storage: { get<T = unknown>(key: string): Promise<T | null>; set(key: string, value: unknown): Promise<void>; delete(key: string): Promise<void>; putIfDay<T extends {day: string}>(key: string, value: T): Promise<T> };
-  readonly reply: { text(text: string): Promise<void>; image(url: string): Promise<void> };
+  readonly reply: {
+    text(text: string): Promise<void>; image(url: string): Promise<void>;
+    /** 需在 plugin.json 声明 "reply.markdown" 权限，并由管理员在控制台"插件设置"中显式授权后才存在；旧核心或未授权时为 undefined，请用可选访问。核心 >=0.8.0。每次命令与 text/image 共用 3 次回复预算，内容 1~4000 字符。 */
+    markdown?(text: string): Promise<void>;
+  };
   readonly http: { json<T = unknown>(url: string, options?: { timeoutMs?: number }): Promise<T> };
   readonly log: { info(message: string): void; error(message: string): void };
 }

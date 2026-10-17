@@ -7,7 +7,7 @@
 ## 开发与安装
 
 ```sh
-npm install -D https://github.com/AnnaofArendelle/qq-bot-plugin-sdk/releases/download/v1.2.0/qq-bot-plugin-sdk-1.2.0.tgz
+npm install -D https://github.com/AnnaofArendelle/qq-bot-plugin-sdk/releases/download/v1.3.0/qq-bot-plugin-sdk-1.3.0.tgz
 ```
 
 推荐克隆 [每日插件](https://github.com/AnnaofArendelle/qq-bot-plugin-daily) 或 [系统插件](https://github.com/AnnaofArendelle/qq-bot-plugin-essentials) 作为模板，然后运行 `npm ci`、`npm run typecheck`、`npm test`。将 `dist/<id>-<version>.zip` 交给用户，通过 WebUI「插件管理」上传，启用并点击「保存并部署」。不要上传 GitHub 自动生成的源代码 ZIP。
@@ -55,6 +55,7 @@ export default definePlugin<{greeting:string}>({
 - `ctx.message`：只读的文字、发送者、群、会话、渠道、QQ 自动 @ 状态和当前请求的节点信息。没有原始 ENV、CF Token、QQ AppSecret 或数据库对象。
 - `ctx.command`：命令 ID、匹配触发词、参数。默认 `exact` 精确匹配；`prefix` 按第一个空白前的词匹配。触发词不允许空白；不支持正则扫描。`/clear`、`/proactive` 为核心保留命令，启用插件之间不能重名。
 - `ctx.reply.text()` / `.image()`：通过机器人适配器发送回复，图片须为 HTTPS。命令及应答不会进入 AI 上下文。
+- `ctx.reply.markdown(text)`（核心 0.8.0+）：发送 QQ Markdown 消息。必须在 `plugin.json` 声明 `"reply.markdown"` 能力，并由管理员在 WebUI「插件设置」中显式开启「Markdown 消息」授权（默认关闭）。未授权或旧核心上该函数为 `undefined`，请用 `typeof ctx.reply.markdown === 'function'` 判断并降级到文字。内容 1~4000 字符，支持标题、粗斜体、删除线、链接、图片（公网直链）、列表、引用与分割线；换行用 `\n`。与 text/image 共用每次命令 3 次回复预算。
 - `ctx.storage.get/set/delete/putIfDay`：JSON 存储，自动以插件 ID 隔离；`putIfDay(key,{day,...})` 原子保留同一天已存在的值。每值最多 4000 字符，每次处理最多 8 次存储操作。ID 是数据身份，升级不要随意改 ID。
 - `ctx.http.json(url,{timeoutMs})`：HTTPS GET，禁止重定向，单响应最多 1 MiB，每次处理最多 4 个请求，超时 1–15 秒。SDK 网络封装是使用约定，不是防恶意代码的网络沙箱。
 - `ctx.commands`：当前渠道已启用插件及核心命令目录，供帮助面板使用。
